@@ -17,11 +17,10 @@ export class TileEntity extends Entity {
 
     const spriteX = x + width / 2;
     const spriteY = y + height / 2;
-    sprite
-      .setX(spriteX)
-      .setY(spriteY)
-      .setTexture("player")
-      .setAlpha(Math.random());
+    sprite.setX(spriteX);
+    sprite.setY(spriteY);
+    sprite.setTexture("player");
+    sprite.setAlpha(Math.random());
     const spriteComponent = new SpriteComponent(sprite);
 
     this.addComponent(tilePosition);

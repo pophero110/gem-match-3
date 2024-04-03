@@ -16,6 +16,11 @@ describe("Entity", () => {
     entity = new Entity();
   });
 
+  test("new entity should have a unique id", () => {
+    expect(entity.id).toBeDefined();
+    expect(entity.id).toHaveLength(36);
+  });
+
   test("addComponent should add a component to the entity", () => {
     const component = new TestTileComponent("test");
     entity.addComponent(component);

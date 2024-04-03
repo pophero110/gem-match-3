@@ -1,5 +1,7 @@
 import { Component } from "../components/Component";
+import { v4 as uuidv4 } from "uuid";
 export class Entity {
+  id: string = uuidv4();
   private components: Map<new (...args: any[]) => Component, Component>;
   constructor() {
     this.components = new Map();

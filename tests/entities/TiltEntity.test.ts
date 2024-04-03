@@ -12,10 +12,12 @@ describe("TileEntity", () => {
     const height = 40;
 
     // Mock
-    const spriteMock: any = {};
-    spriteMock.setX = jest.fn();
-    spriteMock.setY = jest.fn();
-    spriteMock.setFrame = jest.fn();
+    const spriteMock: any = {
+      setX: jest.fn(),
+      setY: jest.fn(),
+      setTexture: jest.fn(),
+      setAlpha: jest.fn(),
+    };
 
     // Act
     const tileEntity = new TileEntity(x, y, width, height, spriteMock);
@@ -40,6 +42,6 @@ describe("TileEntity", () => {
     expect(spriteComponent).toBeInstanceOf(SpriteComponent);
     expect(spriteMock.setX).toHaveBeenCalledWith(expectedSpriteX);
     expect(spriteMock.setY).toHaveBeenCalledWith(expectedSpriteY);
-    expect(spriteMock.setFrame).toHaveBeenCalledWith("player");
+    expect(spriteMock.setTexture).toHaveBeenCalledWith("player");
   });
 });
