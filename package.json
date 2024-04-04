@@ -26,6 +26,7 @@
   "devDependencies": {
     "@babel/core": "^7.21.4",
     "@babel/preset-env": "^7.21.4",
+    "@faker-js/faker": "^8.4.1",
     "babel-loader": "^9.1.2",
     "canvas": "^2.11.2",
     "copy-webpack-plugin": "^11.0.0",

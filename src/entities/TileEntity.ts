@@ -1,30 +1,57 @@
-import PositionComponent from "../components/PositionComponent";
-import SizeComponent from "../components/SizeComponent";
-import SpriteComponent from "../components/SpriteComponent";
-import { Entity } from "./Entity";
-
-export class TileEntity extends Entity {
+import { v4 as uuidV4 } from "uuid";
+export default class TileEntity {
+  id = uuidV4();
+  scene: Phaser.Scene;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  row: number;
+  col: number;
+  sprite: Phaser.GameObjects.Sprite;
   constructor(
+    scene: Phaser.Scene,
     x: number,
     y: number,
     width: number,
     height: number,
+    row: number,
+    col: number,
     sprite: Phaser.GameObjects.Sprite
   ) {
-    super();
-    const tilePosition = new PositionComponent(x, y);
-    const tileSize = new SizeComponent(width, height);
+    this.scene = scene;
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.row = row;
+    this.col = col;
+    this.sprite = sprite;
 
     const spriteX = x + width / 2;
     const spriteY = y + height / 2;
-    sprite.setX(spriteX);
-    sprite.setY(spriteY);
-    sprite.setTexture("player");
-    sprite.setAlpha(Math.random());
-    const spriteComponent = new SpriteComponent(sprite);
+    this.sprite.setX(spriteX);
+    this.sprite.setY(spriteY);
+    this.sprite.setTexture("player");
+    this.sprite.setFrame(Math.floor(Math.random() * 4));
+  }
 
-    this.addComponent(tilePosition);
-    this.addComponent(tileSize);
-    this.addComponent(spriteComponent);
+  render() {
+    this.scene.add.existing(this.sprite);
+  }
+
+  update() {
+    const spriteX = this.x + this.width / 2;
+    const spriteY = this.y + this.height / 2;
+    this.sprite.setX(spriteX);
+    this.sprite.setY(spriteY);
+  }
+
+  onSelectTile(selectedTile: { tile: TileEntity }) {
+    this.sprite.setInteractive();
+    this.sprite.on("pointerdown", () => {
+      console.log("Selected Tile: ", this);
+      selectedTile.tile = this;
+    });
   }
 }

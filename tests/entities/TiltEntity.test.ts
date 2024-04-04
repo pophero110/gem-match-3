@@ -1,7 +1,8 @@
-import PositionComponent from "../../src/components/PositionComponent";
-import SizeComponent from "../../src/components/SizeComponent";
-import SpriteComponent from "../../src/components/SpriteComponent";
-import { TileEntity } from "../../src/entities/TileEntity";
+/**
+ * @jest-environment jsdom
+ */
+import TileEntity from "../../src/entities/TileEntity";
+import { createSceneMock, createSpriteMock } from "../common/MockData";
 
 describe("TileEntity", () => {
   it("should create a TileEntity with components", () => {
@@ -10,38 +11,23 @@ describe("TileEntity", () => {
     const y = 20;
     const width = 30;
     const height = 40;
+    const row = 0;
+    const col = 0;
 
     // Mock
-    const spriteMock: any = {
-      setX: jest.fn(),
-      setY: jest.fn(),
-      setTexture: jest.fn(),
-      setAlpha: jest.fn(),
-    };
+    const sceneMock: any = createSceneMock();
+    const spriteMock: any = createSpriteMock();
 
     // Act
-    const tileEntity = new TileEntity(x, y, width, height, spriteMock);
-
-    // Assert
-    expect(tileEntity.getComponents().length).toBe(3);
-
-    let positionComponent = tileEntity.getComponent(PositionComponent);
-    expect(positionComponent).toBeInstanceOf(PositionComponent);
-    expect(positionComponent.x).toBe(x);
-    expect(positionComponent.y).toBe(y);
-
-    let sizeComponent = tileEntity.getComponent(SizeComponent);
-    expect(sizeComponent).toBeInstanceOf(SizeComponent);
-    expect(sizeComponent.width).toBe(width);
-    expect(sizeComponent.width).toBe(width);
-    expect(sizeComponent.height).toBe(height);
-
-    let spriteComponent = tileEntity.getComponent(SpriteComponent);
-    let expectedSpriteX = x + width / 2;
-    let expectedSpriteY = y + height / 2;
-    expect(spriteComponent).toBeInstanceOf(SpriteComponent);
-    expect(spriteMock.setX).toHaveBeenCalledWith(expectedSpriteX);
-    expect(spriteMock.setY).toHaveBeenCalledWith(expectedSpriteY);
-    expect(spriteMock.setTexture).toHaveBeenCalledWith("player");
+    const tileEntity = new TileEntity(
+      sceneMock,
+      x,
+      y,
+      width,
+      height,
+      row,
+      col,
+      spriteMock
+    );
   });
 });

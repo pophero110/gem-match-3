@@ -1,5 +1,6 @@
-import { Entity } from "../entities/Entity";
-
-export interface System {
-  update(entities: Entity[]): void;
+export default abstract class System {
+  protected scene: Phaser.Scene;
+  constructor(scnen: Phaser.Scene) {
+    this.scene = scnen;
+  }
 }

@@ -1,19 +1,21 @@
-import PositionComponent from "../../src/components/PositionComponent";
-import SizeComponent from "../../src/components/SizeComponent";
 import BoardEntity from "../../src/entities/BoardEntity";
 
 describe("BoardEntity", () => {
   it("should create a BoardEntity with components", () => {
     // Arrange
-    const x = 10;
-    const y = 20;
-    const width = 200;
-    const height = 300;
-    const rows = 3;
-    const cols = 4;
+    const width = 400;
+    const height = 400;
+    const screenWidth = 1000;
+    const screenHeight = 1000;
+    const x = (screenWidth - width) / 2;
+    const y = (screenHeight - height) / 2;
+    const rows = 6;
+    const cols = 6;
+    const scene: any = {};
+    scene.scale = { width: screenWidth, height: screenHeight };
 
     // Act
-    const boardEntity = new BoardEntity(x, y, width, height, rows, cols);
+    const boardEntity = new BoardEntity(scene, x, y, width, height, rows, cols);
 
     // Assert
     // Check if properties are set correctly
@@ -25,17 +27,12 @@ describe("BoardEntity", () => {
     // Check if tile dimensions are calculated correctly
     const expectedTileWidth = width / cols;
     const expectedTileHeight = height / rows;
-    expect(boardEntity.tileDimensions.width).toBe(expectedTileWidth);
-    expect(boardEntity.tileDimensions.height).toBe(expectedTileHeight);
+    expect(boardEntity.tileWidth).toBe(expectedTileWidth);
+    expect(boardEntity.tileHeight).toBe(expectedTileHeight);
 
-    // Check if components are added correctly
-    const sizeComponent = boardEntity.getComponent(SizeComponent);
-    const positionComponent = boardEntity.getComponent(PositionComponent);
-    expect(sizeComponent).toBeDefined();
-    expect(positionComponent).toBeDefined();
-    expect(sizeComponent.width).toBe(width);
-    expect(sizeComponent.height).toBe(height);
-    expect(positionComponent.x).toBe(x);
-    expect(positionComponent.y).toBe(y);
+    expect(boardEntity.width).toBe(width);
+    expect(boardEntity.height).toBe(height);
+    expect(boardEntity.x).toBe(x);
+    expect(boardEntity.y).toBe(y);
   });
 });
