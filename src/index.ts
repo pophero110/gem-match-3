@@ -4,8 +4,8 @@ import GameScene from "./scenes/GameScene";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: 600,
+  height: 600,
   zoom: 1,
   input: {
     keyboard: true,
@@ -19,9 +19,9 @@ const config: Phaser.Types.Core.GameConfig = {
   physics: {
     default: "arcade",
     arcade: {
-      debug: false,
+      debug: true,
       gravity: {
-        y: -500,
+        y: -200,
       },
     },
   },
@@ -29,3 +29,20 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 window.addEventListener("load", () => new Phaser.Game(config));
+// resize();
+// window.addEventListener("resize", resize, false);
+
+// function resize() {
+//   var canvas = document.querySelector("canvas");
+//   var windowWidth = window.innerWidth;
+//   var windowHeight = window.innerHeight;
+//   var windowRatio = windowWidth / windowHeight;
+//   var gameRatio = gameConfig.width / gameConfig.height;
+//   if (windowRatio < gameRatio) {
+//     canvas.style.width = windowWidth + "px";
+//     canvas.style.height = windowWidth / gameRatio + "px";
+//   } else {
+//     canvas.style.width = windowHeight * gameRatio + "px";
+//     canvas.style.height = windowHeight + "px";
+//   }
+// }

@@ -1,6 +1,6 @@
 import TileEntity from "../entities/TileEntity";
 
-export default function handleSwapTile(
+export default function swapTile(
   sourceTile: TileEntity,
   destinationTile: TileEntity,
   tileEntityGrid: TileEntity[][]

@@ -1,57 +1,61 @@
 import { v4 as uuidV4 } from "uuid";
+
+export enum TileType {
+  RED,
+  BLUE,
+  GREEN,
+  YELLOW,
+}
+
 export default class TileEntity {
   id = uuidV4();
   scene: Phaser.Scene;
   x: number;
   y: number;
-  width: number;
-  height: number;
+  size: number;
   row: number;
   col: number;
   sprite: Phaser.GameObjects.Sprite;
+  type: TileType;
   constructor(
     scene: Phaser.Scene,
     x: number,
     y: number,
-    width: number,
-    height: number,
+    size: number,
     row: number,
-    col: number,
-    sprite: Phaser.GameObjects.Sprite
+    col: number
   ) {
-    this.scene = scene;
     this.x = x;
     this.y = y;
-    this.width = width;
-    this.height = height;
+    this.scene = scene;
+    this.size = size;
     this.row = row;
     this.col = col;
-    this.sprite = sprite;
-
-    const spriteX = x + width / 2;
-    const spriteY = y + height / 2;
-    this.sprite.setX(spriteX);
-    this.sprite.setY(spriteY);
-    this.sprite.setTexture("player");
-    this.sprite.setFrame(Math.floor(Math.random() * 4));
   }
 
   render() {
-    this.scene.add.existing(this.sprite);
+    const spriteX = this.x + this.size / 2;
+    const spriteY = this.y + this.size / 2;
+    this.sprite = this.scene.add.sprite(spriteX, spriteY, "player", 0);
+    this.sprite.setSize(this.size, this.size); // Set size
+    this.randomizeTile();
+    // this.sprite.setDisplaySize(width / 2, height / 2); // Set display size
   }
 
   update() {
-    const spriteX = this.x + this.width / 2;
-    const spriteY = this.y + this.height / 2;
+    const spriteX = this.x + this.size / 2;
+    const spriteY = this.y + this.size / 2;
     this.sprite.setX(spriteX);
     this.sprite.setY(spriteY);
   }
 
-  onSelectTile(selectedTile: { tile: TileEntity }) {
-    this.sprite.setInteractive();
-    this.sprite.on("pointerdown", () => {
-      console.log("Selected Tile: ", this);
-      selectedTile.tile = this;
-    });
+  private randomizeTile() {
+    // [ 'WHITE', 'BLACK', 'BLUE', 0, 1, 3 ].
+    // All the keys will be in first half of the array
+    // All the values in second half.
+    const values = Object.values(TileType) as TileType[];
+    const randomIndex = Math.floor(Math.random() * (values.length / 2));
+    this.sprite.setFrame(randomIndex);
+    this.type = values[randomIndex];
   }
 }

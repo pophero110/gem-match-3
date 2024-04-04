@@ -1,89 +1,86 @@
 import BoardEntity from "../entities/BoardEntity";
 import TileEntity from "../entities/TileEntity";
-import handleSwapTile from "../systems/SwapTileSystem";
+import { findMatchedTiles } from "../helpers/FindMatchedTiles";
+import { findTileIndicesByPosition } from "../helpers/FindTile";
+import swapTile from "../helpers/SwapTile";
 
 export default class GameScene extends Phaser.Scene {
   private boardEntity: BoardEntity;
-  private tileEntityMap: Map<string, TileEntity>;
   private tileEntityGrid: TileEntity[][];
   private boardRows = 6;
   private boardCols = 6;
-  private boardWidth = 400;
-  private boardHeight = 400;
-  private tileSize = {
-    width: this.boardWidth / this.boardCols,
-    height: this.boardHeight / this.boardRows,
-  };
-  private selectedTile: { tile: TileEntity } = { tile: null };
+  private boardWidth = 600;
+  private boardHeight = 600;
+  private tileSize = this.boardWidth / this.boardCols;
+  private selectedTile: TileEntity = null;
+  private matchedTiles: TileEntity[][];
   constructor() {
     super({ key: "game", active: false, visible: false });
   }
 
   public create() {
-    const { x, y } = this.calculateBoardPosition();
-    this.boardEntity = new BoardEntity(
-      this,
-      x,
-      y,
-      this.boardWidth,
-      this.boardHeight,
-      this.boardRows,
-      this.boardCols
-    );
-    const { tileEntityMap, tileEntityGrid } = this.createTileEntities();
-    this.tileEntityMap = tileEntityMap;
-    this.tileEntityGrid = tileEntityGrid;
-
+    this.boardEntity = this.createBoardEntity();
+    this.tileEntityGrid = this.createTileEntityGrid();
     // The order of rendering is important
     // Render
     this.boardEntity.render();
     this.renderTileEntites();
+    // TODO: refactor match detecting implementation
+    this.matchedTiles = findMatchedTiles(this.tileEntityGrid);
+    this.handleMatchedTile();
 
     // Input
-    this.readSwapInput();
+    this.readInput();
   }
 
-  public update() {
-    this.updateTileEntites();
-  }
+  public update() {}
 
-  private updateTileEntites() {
-    this.tileEntityMap.forEach((tileEntity) => {
-      tileEntity.update();
-    });
+  private updateTileEntityGrid() {
+    this.tileEntityGrid.forEach((cols) =>
+      cols.forEach((tileEntity) => tileEntity.update())
+    );
   }
 
   private renderTileEntites() {
-    this.tileEntityMap.forEach((tileEntity) => tileEntity.render());
+    this.tileEntityGrid.forEach((cols) =>
+      cols.forEach((tileEntity) => tileEntity.render())
+    );
   }
 
-  private createTileEntities() {
-    let tileEntityMap: Map<string, TileEntity> = new Map();
+  private createTileEntityGrid() {
     let tileEntityGrid: TileEntity[][] = [];
     for (let row = 0; row < this.boardRows; row++) {
       tileEntityGrid[row] = [];
       for (let col = 0; col < this.boardCols; col++) {
-        const tileX = this.boardEntity.x + col * this.tileSize.width;
-        const tileY = this.boardEntity.y + row * this.tileSize.height;
+        const tileX = this.boardEntity.x + col * this.tileSize;
+        const tileY = this.boardEntity.y + row * this.tileSize;
 
-        const sprite = new Phaser.GameObjects.Sprite(this, 0, 0, "player");
         const tileEntity = new TileEntity(
           this,
           tileX,
           tileY,
-          this.tileSize.width,
-          this.tileSize.height,
+          this.tileSize,
           row,
-          col,
-          sprite
+          col
         );
-        tileEntity.onSelectTile(this.selectedTile);
 
-        tileEntityMap.set(tileEntity.id, tileEntity);
         tileEntityGrid[row][col] = tileEntity;
       }
     }
-    return { tileEntityMap, tileEntityGrid };
+    return tileEntityGrid;
+  }
+
+  private createBoardEntity() {
+    return new BoardEntity(
+      this,
+      0,
+      0,
+      this.boardWidth,
+      this.boardHeight,
+      this.boardRows,
+      this.boardCols,
+      this.tileSize
+    );
   }
 
   private calculateBoardPosition(): { x: number; y: number } {
@@ -96,17 +93,28 @@ export default class GameScene extends Phaser.Scene {
     return { x, y };
   }
 
-  private readSwapInput() {
+  private readInput() {
     let startX: number;
     let startY: number;
     const input = this.input;
     input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
       startX = pointer.x;
       startY = pointer.y;
+      const tileIndices = findTileIndicesByPosition(
+        startX,
+        startY,
+        this.tileSize,
+        this.boardRows,
+        this.boardCols
+      );
+      if (tileIndices) {
+        this.selectedTile =
+          this.tileEntityGrid[tileIndices.row][tileIndices.col];
+      }
     });
 
     input.on("pointerup", (pointer: Phaser.Input.Pointer) => {
-      if (this.selectedTile.tile == null) return;
+      if (this.selectedTile == null) return;
 
       const deltaX = pointer.x - startX;
       const deltaY = pointer.y - startY;
@@ -120,21 +128,31 @@ export default class GameScene extends Phaser.Scene {
         if (direction) {
           console.log("Swap Direction: ", direction);
           const destinationTile = this.findDestinationTile(
-            this.selectedTile.tile,
+            this.selectedTile,
             this.tileEntityGrid,
             direction
           );
-          console.log({ sourceTile: this.selectedTile.tile, destinationTile });
+          console.log({ sourceTile: this.selectedTile, destinationTile });
           if (destinationTile) {
-            handleSwapTile(
-              this.selectedTile.tile,
-              destinationTile,
-              this.tileEntityGrid
-            );
+            swapTile(this.selectedTile, destinationTile, this.tileEntityGrid);
+            this.matchedTiles = findMatchedTiles(this.tileEntityGrid);
+            this.handleMatchedTile();
+            this.updateTileEntityGrid();
           }
         }
       }
     });
+  }
+
+  private handleMatchedTile() {
+    this.matchedTiles.forEach((tileEntities) =>
+      tileEntities.forEach((tileEntity) => {
+        tileEntity.sprite.setTint(0x00ff00); // Set tint to green
+        setTimeout(() => {
+          tileEntity.sprite.destroy();
+        }, 500);
+      })
+    );
   }
 
   private determineDirection(deltaX: number, deltaY: number): string | null {

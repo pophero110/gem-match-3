@@ -1,10 +1,10 @@
-import handleSwapTile from "../../src/systems/SwapTileSystem";
-import { createTileEntity } from "../common/MockData";
+import swapTile from "../../src/helpers/SwapTile";
+import { createMockTileEntity } from "../common/MockData";
 
-describe("swapTiles", () => {
+describe("swapTile", () => {
   function createMockTileEntityGrid(rows: number, cols: number) {
     return Array.from({ length: rows }, () =>
-      Array.from({ length: cols }, createTileEntity)
+      Array.from({ length: cols }, createMockTileEntity)
     );
   }
 
@@ -31,7 +31,7 @@ describe("swapTiles", () => {
     const destinationTileY = destinationTile.y;
 
     // Act
-    handleSwapTile(sourceTile, destinationTile, tileEntityGrid);
+    swapTile(sourceTile, destinationTile, tileEntityGrid);
 
     // Assert that the tiles are swapped correctly
     expect(tileEntityGrid[0][0]).toBe(destinationTile);
