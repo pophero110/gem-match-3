@@ -1,4 +1,5 @@
 import BoardEntity from "../../src/entities/BoardEntity";
+import { createMockScene } from "../common/MockData";
 
 describe("BoardEntity", () => {
   it("should create a BoardEntity with components", () => {
@@ -12,8 +13,7 @@ describe("BoardEntity", () => {
     const rows = 6;
     const cols = 6;
     const tileSize = 100;
-    const scene: any = {};
-    scene.scale = { width: screenWidth, height: screenHeight };
+    const scene = createMockScene();
 
     // Act
     const boardEntity = new BoardEntity(

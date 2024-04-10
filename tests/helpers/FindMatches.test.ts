@@ -1,5 +1,5 @@
 import TileEntity from "../../src/entities/TileEntity";
-import { findMatchedTiles } from "../../src/helpers/FindMatchedTiles";
+import { findMatches } from "../../src/helpers/FindMatches";
 import { createMockTileEntityGridFromPattern } from "../common/MockData";
 
 describe("findMatchedTiles", () => {
@@ -13,7 +13,7 @@ describe("findMatchedTiles", () => {
     const tileEntityGrid: TileEntity[][] =
       createMockTileEntityGridFromPattern(pattern);
 
-    const result = findMatchedTiles(tileEntityGrid);
+    const result = findMatches(tileEntityGrid);
     expect(result).toEqual([]);
   });
 
@@ -27,7 +27,7 @@ describe("findMatchedTiles", () => {
     const tileEntityGrid: TileEntity[][] =
       createMockTileEntityGridFromPattern(pattern);
 
-    const result = findMatchedTiles(tileEntityGrid);
+    const result = findMatches(tileEntityGrid);
     expect(result).toEqual([
       [tileEntityGrid[0][0], tileEntityGrid[0][1], tileEntityGrid[0][2]],
     ]);
@@ -43,7 +43,7 @@ describe("findMatchedTiles", () => {
     const tileEntityGrid: TileEntity[][] =
       createMockTileEntityGridFromPattern(pattern);
 
-    const result = findMatchedTiles(tileEntityGrid);
+    const result = findMatches(tileEntityGrid);
     expect(result).toEqual([
       [tileEntityGrid[0][0], tileEntityGrid[1][0], tileEntityGrid[2][0]],
     ]);
@@ -59,7 +59,7 @@ describe("findMatchedTiles", () => {
     const tileEntityGrid: TileEntity[][] =
       createMockTileEntityGridFromPattern(pattern);
 
-    const result = findMatchedTiles(tileEntityGrid);
+    const result = findMatches(tileEntityGrid);
     expect(result).toEqual([
       [tileEntityGrid[0][0], tileEntityGrid[0][1], tileEntityGrid[0][2]],
       [tileEntityGrid[0][0], tileEntityGrid[1][0], tileEntityGrid[2][0]],

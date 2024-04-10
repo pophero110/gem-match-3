@@ -36,16 +36,16 @@ export function createMockTileEntityGrid() {
 }
 
 export function createMockTileEntity() {
-  const x = faker.number.int({ max: 100 });
-  const y = faker.number.int({ max: 100 });
-  const row = faker.number.int({ max: 6 });
-  const col = faker.number.int({ max: 6 });
+  const x = faker.number.int({ max: 600 });
+  const y = faker.number.int({ max: 600 });
   const size = 100;
-  return new TileEntity(createMockScene(), x, y, size, row, col);
+  return new TileEntity(createMockScene(), x, y, size);
 }
 
 export const createMockSprite = (): any => {
   return {
+    x: faker.number.int({ max: 600 }),
+    y: faker.number.int({ max: 600 }),
     setX: jest.fn(),
     setY: jest.fn(),
     setTexture: jest.fn(),
@@ -61,15 +61,27 @@ export const createMockSprite = (): any => {
 };
 
 export const createMockScene = (): any => {
+  const screenWidth = 600;
+  const screenHeight = 600;
   return {
+    scale: { width: screenWidth, height: screenHeight },
     add: {
       existing: jest.fn(),
       sprite: jest.fn(() => createMockSprite()),
+      graphics: jest.fn(() => createMockGraphics()),
     },
     physics: {
       add: {
         sprite: jest.fn(() => createMockSprite()),
       },
     },
+  };
+};
+
+export const createMockGraphics = () => {
+  return {
+    fillStyle: jest.fn(),
+    fillRect: jest.fn(),
+    setDepth: jest.fn(),
   };
 };

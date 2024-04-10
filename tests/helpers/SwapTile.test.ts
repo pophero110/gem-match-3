@@ -1,50 +1,114 @@
+import { createMockTileEntityGrid } from "../../tests/common/MockData";
 import swapTile from "../../src/helpers/SwapTile";
-import { createMockTileEntity } from "../common/MockData";
+import TileEntity from "../../src/entities/TileEntity";
 
 describe("swapTile", () => {
-  function createMockTileEntityGrid(rows: number, cols: number) {
-    return Array.from({ length: rows }, () =>
-      Array.from({ length: cols }, createMockTileEntity)
-    );
-  }
+  let tileEntityGrid: TileEntity[][];
 
-  it("should swap tiles correctly", () => {
-    const rows = 6;
-    const cols = 6;
-    const sourceTileRow = 0;
-    const sourceTileCol = 0;
-    const destinationTileRow = 1;
-    const destinationTileCol = 1;
-    const tileEntityGrid = createMockTileEntityGrid(rows, cols);
+  beforeEach(() => {
+    // Create a fresh mock tile entity grid before each test
+    tileEntityGrid = createMockTileEntityGrid();
+  });
 
-    const sourceTile = tileEntityGrid[sourceTileRow][sourceTileCol];
-    sourceTile.row = sourceTileRow;
-    sourceTile.col = sourceTileCol;
+  // Test swapping tiles in the up direction
+  it("should swap tiles in up direction", () => {
+    // Define source and destination tile indices
+    const sourceTileIndices = { row: 1, col: 1 };
+    const destinationTileIndices = { row: 0, col: 1 };
+
+    // Retrieve source and destination tiles
+    const sourceTile =
+      tileEntityGrid[sourceTileIndices.row][sourceTileIndices.col];
     const destinationTile =
-      tileEntityGrid[destinationTileRow][destinationTileCol];
-    destinationTile.row = destinationTileRow;
-    destinationTile.col = destinationTileCol;
-
-    const sourceTileX = sourceTile.x;
-    const sourceTileY = sourceTile.y;
-    const destinationTileX = destinationTile.x;
-    const destinationTileY = destinationTile.y;
+      tileEntityGrid[destinationTileIndices.row][destinationTileIndices.col];
 
     // Act
-    swapTile(sourceTile, destinationTile, tileEntityGrid);
+    const actual = swapTile(sourceTileIndices, "up", tileEntityGrid);
 
-    // Assert that the tiles are swapped correctly
-    expect(tileEntityGrid[0][0]).toBe(destinationTile);
-    expect(tileEntityGrid[1][1]).toBe(sourceTile);
+    // Assert that tiles are swapped correctly
+    expect(tileEntityGrid[1][1]).toBe(destinationTile); // Destination tile moved to source position
+    expect(tileEntityGrid[0][1]).toBe(sourceTile); // Source tile moved to destination position
+    expect(actual).toBeDefined();
+    expect(actual.sourceTile).toEqual(sourceTile);
+    expect(actual.destinationTile).toEqual(destinationTile);
+  });
 
-    expect(sourceTile.x).toEqual(destinationTileX);
-    expect(sourceTile.y).toEqual(destinationTileY);
-    expect(destinationTile.x).toEqual(sourceTileX);
-    expect(destinationTile.y).toEqual(sourceTileY);
+  // Test swapping tiles in the left direction
+  it("should swap tiles in left direction", () => {
+    // Define source and destination tile indices
+    const sourceTileIndices = { row: 0, col: 1 };
+    const destinationTileIndices = { row: 0, col: 0 };
 
-    expect(sourceTile.row).toEqual(destinationTileRow);
-    expect(sourceTile.col).toEqual(destinationTileCol);
-    expect(destinationTile.row).toEqual(sourceTileRow);
-    expect(destinationTile.col).toEqual(sourceTileCol);
+    // Retrieve source and destination tiles
+    const sourceTile =
+      tileEntityGrid[sourceTileIndices.row][sourceTileIndices.col];
+    const destinationTile =
+      tileEntityGrid[destinationTileIndices.row][destinationTileIndices.col];
+
+    const actual = swapTile(sourceTileIndices, "left", tileEntityGrid);
+
+    // Assert that tiles are swapped correctly
+    expect(tileEntityGrid[0][1]).toBe(destinationTile); // Destination tile moved to source position
+    expect(tileEntityGrid[0][0]).toBe(sourceTile); // Source tile moved to destination position
+    expect(actual).toBeDefined();
+    expect(actual.sourceTile).toEqual(sourceTile);
+    expect(actual.destinationTile).toEqual(destinationTile);
+  });
+
+  it("should swap tiles in right direction", () => {
+    // Define source and destination tile indices
+    const sourceTileIndices = { row: 0, col: 0 };
+    const destinationTileIndices = { row: 0, col: 1 };
+
+    // Retrieve source and destination tiles
+    const sourceTile =
+      tileEntityGrid[sourceTileIndices.row][sourceTileIndices.col];
+    const destinationTile =
+      tileEntityGrid[destinationTileIndices.row][destinationTileIndices.col];
+
+    const actual = swapTile(sourceTileIndices, "right", tileEntityGrid);
+
+    // Assert that tiles are swapped correctly
+    expect(tileEntityGrid[0][0]).toBe(destinationTile); // Destination tile moved to source position
+    expect(tileEntityGrid[0][1]).toBe(sourceTile); // Source tile moved to destination position
+    expect(actual).toBeDefined();
+    expect(actual.sourceTile).toEqual(sourceTile);
+    expect(actual.destinationTile).toEqual(destinationTile);
+  });
+
+  // Test swapping tiles in the down direction
+  it("should swap tiles in down direction", () => {
+    // Define source and destination tile indices
+    const sourceTileIndices = { row: 0, col: 1 };
+    const destinationTileIndices = { row: 1, col: 1 };
+
+    // Retrieve source and destination tiles
+    const sourceTile =
+      tileEntityGrid[sourceTileIndices.row][sourceTileIndices.col];
+    const destinationTile =
+      tileEntityGrid[destinationTileIndices.row][destinationTileIndices.col];
+
+    const actual = swapTile(sourceTileIndices, "down", tileEntityGrid);
+
+    // Assert that tiles are swapped correctly
+    expect(tileEntityGrid[0][1]).toBe(destinationTile); // Destination tile moved to source position
+    expect(tileEntityGrid[1][1]).toBe(sourceTile); // Source tile moved to destination position
+    expect(actual).toBeDefined();
+    expect(actual.sourceTile).toEqual(sourceTile);
+    expect(actual.destinationTile).toEqual(destinationTile);
+  });
+
+  it("should not swap tiles and log an error for invalid direction", () => {
+    // Define source and destination tile indices
+    const sourceTileIndices = { row: 0, col: 1 };
+
+    // Call the swapTile function with an invalid direction
+    const actual = swapTile(
+      sourceTileIndices,
+      "invalidDirection",
+      tileEntityGrid
+    );
+
+    expect(actual).toBeNull();
   });
 });

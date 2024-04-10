@@ -26,6 +26,8 @@ export default class BoardEntity {
     this.rows = rows;
     this.cols = cols;
     this.tileSize = tileSize;
+
+    this.render();
   }
 
   render() {

@@ -13,40 +13,28 @@ export default class TileEntity {
   x: number;
   y: number;
   size: number;
-  row: number;
-  col: number;
   sprite: Phaser.GameObjects.Sprite;
+  frame: number;
   type: TileType;
-  constructor(
-    scene: Phaser.Scene,
-    x: number,
-    y: number,
-    size: number,
-    row: number,
-    col: number
-  ) {
+  isEmpty: boolean;
+  constructor(scene: Phaser.Scene, x: number, y: number, size: number) {
     this.x = x;
     this.y = y;
     this.scene = scene;
     this.size = size;
-    this.row = row;
-    this.col = col;
+    this.isEmpty = false;
+
+    this.randomizeTile();
+    this.render();
   }
 
   render() {
     const spriteX = this.x + this.size / 2;
     const spriteY = this.y + this.size / 2;
     this.sprite = this.scene.add.sprite(spriteX, spriteY, "player", 0);
+    this.sprite.setFrame(this.frame);
     this.sprite.setSize(this.size, this.size); // Set size
-    this.randomizeTile();
     // this.sprite.setDisplaySize(width / 2, height / 2); // Set display size
-  }
-
-  update() {
-    const spriteX = this.x + this.size / 2;
-    const spriteY = this.y + this.size / 2;
-    this.sprite.setX(spriteX);
-    this.sprite.setY(spriteY);
   }
 
   private randomizeTile() {
@@ -55,7 +43,7 @@ export default class TileEntity {
     // All the values in second half.
     const values = Object.values(TileType) as TileType[];
     const randomIndex = Math.floor(Math.random() * (values.length / 2));
-    this.sprite.setFrame(randomIndex);
+    this.frame = randomIndex;
     this.type = values[randomIndex];
   }
 }

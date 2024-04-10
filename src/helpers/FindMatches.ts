@@ -1,8 +1,6 @@
 import TileEntity from "../entities/TileEntity";
 
-export function findMatchedTiles(
-  tileEntityGrid: TileEntity[][]
-): TileEntity[][] {
+export function findMatches(tileEntityGrid: TileEntity[][]): TileEntity[][] {
   const matchedTiles: TileEntity[][] = [];
 
   const rows = tileEntityGrid.length;

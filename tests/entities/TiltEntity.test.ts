@@ -6,14 +6,12 @@ describe("TileEntity", () => {
     it("should initialize TileEntity with provided values", () => {
       const mockScene = createMockScene();
 
-      const tileEntity = new TileEntity(mockScene, 0, 0, 100, 1, 1);
+      const tileEntity = new TileEntity(mockScene, 0, 0, 100);
 
       expect(tileEntity.scene).toBe(mockScene);
       expect(tileEntity.x).toBe(0);
       expect(tileEntity.y).toBe(0);
       expect(tileEntity.size).toBe(100);
-      expect(tileEntity.row).toBe(1);
-      expect(tileEntity.col).toBe(1);
     });
   });
 
@@ -25,7 +23,7 @@ describe("TileEntity", () => {
       const spyMathRandom = jest
         .spyOn(Math, "random")
         .mockReturnValue(expectedRandomIndex);
-      const tileEntity = new TileEntity(mockScene, 0, 0, 100, 1, 1);
+      const tileEntity = new TileEntity(mockScene, 0, 0, 100);
       const mockSprite = tileEntity.sprite;
 
       tileEntity.render();
@@ -34,24 +32,6 @@ describe("TileEntity", () => {
       expect(tileEntity.type).toBe(expectedValues[expectedRandomIndex]);
 
       spyMathRandom.mockRestore(); // Restore Math.random() to its original implementation
-    });
-  });
-
-  describe("update", () => {
-    it("should update sprite position", () => {
-      const mockScene = createMockScene();
-      const tileEntity = new TileEntity(mockScene, 0, 0, 100, 1, 1);
-
-      tileEntity.render();
-      const mockSprite = tileEntity.sprite;
-
-      tileEntity.update();
-
-      const expectedSpriteX = 0 + 100 / 2;
-      const expectedSpriteY = 0 + 100 / 2;
-
-      expect(mockSprite.setX).toHaveBeenCalledWith(expectedSpriteX);
-      expect(mockSprite.setY).toHaveBeenCalledWith(expectedSpriteY);
     });
   });
 });
