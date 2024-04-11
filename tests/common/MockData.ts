@@ -1,5 +1,6 @@
 import TileEntity, { TileType } from "../../src/entities/TileEntity";
 import { faker } from "@faker-js/faker";
+import { GameConfig } from "../../src/scenes/GameScene";
 
 const TileTypeArray = Object.values(TileType) as TileType[];
 
@@ -27,11 +28,13 @@ export function createMockTileEntityGridFromPattern(
   return grid;
 }
 
-export function createMockTileEntityGrid() {
+export function createMockTileEntityGrid(): TileEntity[][] {
   const rows = 6;
   const cols = 6;
-  return Array.from({ length: rows }, () =>
-    Array.from({ length: cols }, createMockTileEntity)
+  return Array.from({ length: rows }, (_, row) =>
+    Array.from({ length: cols }, (_, col) =>
+      createMockTileEntityWithPosition(row, col)
+    )
   );
 }
 
@@ -40,6 +43,13 @@ export function createMockTileEntity() {
   const y = faker.number.int({ max: 600 });
   const size = 100;
   return new TileEntity(createMockScene(), x, y, size);
+}
+
+export function createMockTileEntityWithPosition(row, col) {
+  const tileSize = 100;
+  const x = row * tileSize;
+  const y = col * tileSize;
+  return new TileEntity(createMockScene(), x, y, tileSize);
 }
 
 export const createMockSprite = (): any => {
@@ -83,5 +93,23 @@ export const createMockGraphics = () => {
     fillStyle: jest.fn(),
     fillRect: jest.fn(),
     setDepth: jest.fn(),
+  };
+};
+
+export const createMockGameConfig = (): GameConfig => {
+  return {
+    scene: createMockScene(),
+    boardEntity: null,
+    tileEntityGrid: createMockTileEntityGrid(),
+    boardRows: 6,
+    boardCols: 6,
+    boardWidth: 600,
+    boardHeight: 600,
+    tileSize: 600 / 6,
+    selectedTile: null,
+    matches: null,
+    swapSpeed: 200,
+    shfitSpeed: 100,
+    destroySpeed: 200,
   };
 };

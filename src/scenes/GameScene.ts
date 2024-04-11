@@ -1,9 +1,8 @@
-import { de } from "@faker-js/faker";
 import BoardEntity from "../entities/BoardEntity";
 import TileEntity from "../entities/TileEntity";
 import { findMatches } from "../helpers/FindMatches";
 import { findTileIndicesByPosition } from "../helpers/FindTile";
-import { calculateTileCenter } from "../helpers/PositionUtils";
+import { shiftTilesUp } from "../helpers/ShiftTileUp";
 import swapTile from "../helpers/SwapTile";
 export interface GameConfig {
   scene: Phaser.Scene;
@@ -17,6 +16,8 @@ export interface GameConfig {
   selectedTile: TileEntity | null;
   matches: TileEntity[][] | null;
   swapSpeed: number;
+  shfitSpeed: number;
+  destroySpeed: number;
 }
 export default class GameScene extends Phaser.Scene {
   private gameConfig: GameConfig = {
@@ -30,7 +31,9 @@ export default class GameScene extends Phaser.Scene {
     tileSize: 600 / 6,
     selectedTile: null,
     matches: null,
-    swapSpeed: 100,
+    swapSpeed: 200,
+    shfitSpeed: 100,
+    destroySpeed: 200,
   };
   constructor() {
     super({ key: "game", active: false, visible: false });
@@ -147,6 +150,14 @@ export default class GameScene extends Phaser.Scene {
     );
   }
 
+  private determineDirection(deltaX: number, deltaY: number): string | null {
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      return deltaX > 0 ? "right" : "left";
+    } else {
+      return deltaY > 0 ? "down" : "up";
+    }
+  }
+
   private animateSwappedTile(
     sourceTile: TileEntity,
     destinationTile: TileEntity
@@ -159,7 +170,6 @@ export default class GameScene extends Phaser.Scene {
       x: destinationTile.sprite.x,
       y: destinationTile.sprite.y,
       duration: this.gameConfig.swapSpeed,
-      callbackScope: this,
     } as any);
 
     this.tweens.add({
@@ -167,32 +177,27 @@ export default class GameScene extends Phaser.Scene {
       x: sourceSpriteX,
       y: sourceSpriteY,
       duration: this.gameConfig.swapSpeed,
-      callbackScope: this,
     } as any);
   }
 
-  private determineDirection(deltaX: number, deltaY: number): string | null {
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      return deltaX > 0 ? "right" : "left";
-    } else {
-      return deltaY > 0 ? "down" : "up";
-    }
-  }
-
   private destoryMatches() {
+    let destroyed = 0;
     this.gameConfig.matches.forEach((match) =>
       match.forEach((tileEntity) => {
-        tileEntity.isEmpty = true;
+        destroyed++;
         this.tweens.add({
           targets: [tileEntity.sprite],
-          delay: 0,
-          alpha: 0,
-          ease: "Power1",
-          duration: 2000,
+          alpha: 0.5,
+          duration: this.gameConfig.destroySpeed,
           onComplete: () => {
-            console.log("Destory Match Tween completed");
+            destroyed--;
+            if (destroyed == 0) {
+              shiftTilesUp(this.gameConfig);
+            }
+            tileEntity.sprite.visible = false;
           },
         } as any);
+        tileEntity.isEmpty = true;
       })
     );
   }
