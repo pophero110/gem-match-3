@@ -1,5 +1,5 @@
 import {
-  checkEmptyTilesAbove,
+  countEmptyTilesAbove,
   shiftTileUpIfPossible,
   shiftTilesUp,
 } from "../../src/helpers/ShiftTileUp";
@@ -14,7 +14,7 @@ describe("Shift Tiles", () => {
       const grid = createMockTileEntityGrid();
       grid[0][0].isEmpty = true;
       grid[1][0].isEmpty = true;
-      var actual = checkEmptyTilesAbove(2, 0, grid);
+      var actual = countEmptyTilesAbove(2, 0, grid);
 
       expect(actual).toEqual(2);
     });
@@ -22,7 +22,7 @@ describe("Shift Tiles", () => {
     it("shoud return 0 when tile is at the first row", () => {
       const grid = createMockTileEntityGrid();
 
-      var actual = checkEmptyTilesAbove(0, 0, grid);
+      var actual = countEmptyTilesAbove(0, 0, grid);
 
       expect(actual).toEqual(0);
     });

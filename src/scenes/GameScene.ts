@@ -1,9 +1,10 @@
 import BoardEntity from "../entities/BoardEntity";
 import TileEntity from "../entities/TileEntity";
-import { findMatches } from "../helpers/FindMatches";
-import { findTileIndicesByPosition } from "../helpers/FindTile";
-import { shiftTilesUp } from "../helpers/ShiftTileUp";
-import swapTile from "../helpers/SwapTile";
+import { destoryMatches } from "../helpers/DestoryMatches";
+import { markMatches } from "../helpers/MarkMatches";
+import { calculateTileCenter } from "../helpers/PositionUtils";
+import { onSelectTile } from "../helpers/OnSelectTile";
+import { onSwapTile } from "../helpers/OnSwapTile";
 export interface GameConfig {
   scene: Phaser.Scene;
   boardEntity: BoardEntity | null;
@@ -14,10 +15,12 @@ export interface GameConfig {
   boardHeight: number;
   tileSize: number;
   selectedTile: TileEntity | null;
-  matches: TileEntity[][] | null;
+  removalGrid: number[][] | null;
   swapSpeed: number;
   shfitSpeed: number;
   destroySpeed: number;
+  canSelectTile: boolean;
+  canSwapTile: boolean;
 }
 export default class GameScene extends Phaser.Scene {
   private gameConfig: GameConfig = {
@@ -30,10 +33,12 @@ export default class GameScene extends Phaser.Scene {
     boardHeight: 600,
     tileSize: 600 / 6,
     selectedTile: null,
-    matches: null,
+    removalGrid: null,
     swapSpeed: 200,
     shfitSpeed: 100,
     destroySpeed: 200,
+    canSelectTile: true,
+    canSwapTile: false,
   };
   constructor() {
     super({ key: "game", active: false, visible: false });
@@ -42,13 +47,16 @@ export default class GameScene extends Phaser.Scene {
   public create() {
     this.gameConfig.boardEntity = this.createBoardEntity();
     this.gameConfig.tileEntityGrid = this.createTileEntityGrid();
+    this.gameConfig.removalGrid = Array.from(
+      { length: this.gameConfig.boardRows },
+      () => Array(this.gameConfig.boardCols).fill(0)
+    );
 
-    // TODO: refactor match detecting implementation
-    this.gameConfig.matches = findMatches(this.gameConfig.tileEntityGrid);
-    this.destoryMatches();
+    markMatches(this.gameConfig);
+    destoryMatches(this.gameConfig);
 
-    // Input
-    this.readInput();
+    this.input.on("pointerdown", onSelectTile, this);
+    this.input.on("pointerup", onSwapTile, this);
   }
 
   public update() {}
@@ -58,19 +66,17 @@ export default class GameScene extends Phaser.Scene {
     for (let row = 0; row < this.gameConfig.boardRows; row++) {
       tileEntityGrid[row] = [];
       for (let col = 0; col < this.gameConfig.boardCols; col++) {
-        const tileX =
-          this.gameConfig.boardEntity.x + col * this.gameConfig.tileSize;
-        const tileY =
-          this.gameConfig.boardEntity.y + row * this.gameConfig.tileSize;
-
-        const tileEntity = new TileEntity(
-          this,
-          tileX,
-          tileY,
+        const { x, y } = calculateTileCenter(
+          row,
+          col,
           this.gameConfig.tileSize
         );
-
-        tileEntityGrid[row][col] = tileEntity;
+        tileEntityGrid[row][col] = new TileEntity(
+          this,
+          x,
+          y,
+          this.gameConfig.tileSize
+        );
       }
     }
     return tileEntityGrid;
@@ -86,119 +92,6 @@ export default class GameScene extends Phaser.Scene {
       this.gameConfig.boardRows,
       this.gameConfig.boardCols,
       this.gameConfig.tileSize
-    );
-  }
-
-  private readInput() {
-    let startX: number;
-    let startY: number;
-    let sourceTileIndices: { row: number; col: number };
-    const input = this.input;
-    input.on(
-      "pointerdown",
-      (pointer: Phaser.Input.Pointer) => {
-        startX = pointer.x;
-        startY = pointer.y;
-        sourceTileIndices = findTileIndicesByPosition(
-          startX,
-          startY,
-          this.gameConfig.tileSize,
-          this.gameConfig.boardRows,
-          this.gameConfig.boardCols
-        );
-        if (sourceTileIndices) {
-          this.gameConfig.selectedTile =
-            this.gameConfig.tileEntityGrid[sourceTileIndices.row][
-              sourceTileIndices.col
-            ];
-        }
-      },
-      this
-    );
-
-    input.on(
-      "pointerup",
-      (pointer: Phaser.Input.Pointer) => {
-        if (this.gameConfig.selectedTile == null) return;
-
-        const deltaX = pointer.x - startX;
-        const deltaY = pointer.y - startY;
-        const distanceThreshold = 50;
-
-        if (
-          Math.abs(deltaX) > distanceThreshold ||
-          Math.abs(deltaY) > distanceThreshold
-        ) {
-          const direction = this.determineDirection(deltaX, deltaY);
-          if (direction) {
-            const { sourceTile, destinationTile } = swapTile(
-              sourceTileIndices,
-              direction,
-              this.gameConfig.tileEntityGrid
-            );
-            if (sourceTile && destinationTile) {
-              this.animateSwappedTile(sourceTile, destinationTile);
-              this.gameConfig.matches = findMatches(
-                this.gameConfig.tileEntityGrid
-              );
-              this.destoryMatches();
-            }
-          }
-        }
-      },
-      this
-    );
-  }
-
-  private determineDirection(deltaX: number, deltaY: number): string | null {
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      return deltaX > 0 ? "right" : "left";
-    } else {
-      return deltaY > 0 ? "down" : "up";
-    }
-  }
-
-  private animateSwappedTile(
-    sourceTile: TileEntity,
-    destinationTile: TileEntity
-  ) {
-    const sourceSpriteX = sourceTile.sprite.x;
-    const sourceSpriteY = sourceTile.sprite.y;
-
-    this.tweens.add({
-      targets: sourceTile.sprite,
-      x: destinationTile.sprite.x,
-      y: destinationTile.sprite.y,
-      duration: this.gameConfig.swapSpeed,
-    } as any);
-
-    this.tweens.add({
-      targets: destinationTile.sprite,
-      x: sourceSpriteX,
-      y: sourceSpriteY,
-      duration: this.gameConfig.swapSpeed,
-    } as any);
-  }
-
-  private destoryMatches() {
-    let destroyed = 0;
-    this.gameConfig.matches.forEach((match) =>
-      match.forEach((tileEntity) => {
-        destroyed++;
-        this.tweens.add({
-          targets: [tileEntity.sprite],
-          alpha: 0.5,
-          duration: this.gameConfig.destroySpeed,
-          onComplete: () => {
-            destroyed--;
-            if (destroyed == 0) {
-              shiftTilesUp(this.gameConfig);
-            }
-            tileEntity.sprite.visible = false;
-          },
-        } as any);
-        tileEntity.isEmpty = true;
-      })
     );
   }
 }

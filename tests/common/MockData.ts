@@ -1,26 +1,29 @@
 import TileEntity, { TileType } from "../../src/entities/TileEntity";
 import { faker } from "@faker-js/faker";
 import { GameConfig } from "../../src/scenes/GameScene";
+import { calculateTileCenter } from "../../src/helpers/PositionUtils";
 
 const TileTypeArray = Object.values(TileType) as TileType[];
 
 /**
- * @param pattern  Number represents the TileType
+ * @param tileTypeGrid  Number represents the TileType
  * @returns
  */
 export function createMockTileEntityGridFromPattern(
-  pattern: number[][]
+  tileTypeGrid: number[][],
+  isEmpty: boolean = false
 ): TileEntity[][] {
-  const rows = pattern.length;
-  const cols = pattern[0].length;
+  const rows = tileTypeGrid.length;
+  const cols = tileTypeGrid[0].length;
   const grid: TileEntity[][] = [];
 
   // Generate the grid
   for (let row = 0; row < rows; row++) {
     grid[row] = [];
     for (let col = 0; col < cols; col++) {
-      const tileEntity = createMockTileEntity();
-      tileEntity.type = TileTypeArray[pattern[row][col]];
+      const tileEntity = createMockTileEntityWithPosition(row, col);
+      tileEntity.type = TileTypeArray[tileTypeGrid[row][col]];
+      tileEntity.isEmpty = isEmpty;
       grid[row][col] = tileEntity;
     }
   }
@@ -38,24 +41,16 @@ export function createMockTileEntityGrid(): TileEntity[][] {
   );
 }
 
-export function createMockTileEntity() {
-  const x = faker.number.int({ max: 600 });
-  const y = faker.number.int({ max: 600 });
-  const size = 100;
-  return new TileEntity(createMockScene(), x, y, size);
-}
-
 export function createMockTileEntityWithPosition(row, col) {
   const tileSize = 100;
-  const x = row * tileSize;
-  const y = col * tileSize;
+  const { x, y } = calculateTileCenter(row, col, tileSize);
   return new TileEntity(createMockScene(), x, y, tileSize);
 }
 
-export const createMockSprite = (): any => {
+export const createMockSprite = (x, y): any => {
   return {
-    x: faker.number.int({ max: 600 }),
-    y: faker.number.int({ max: 600 }),
+    x,
+    y,
     setX: jest.fn(),
     setY: jest.fn(),
     setTexture: jest.fn(),
@@ -74,16 +69,14 @@ export const createMockScene = (): any => {
   const screenWidth = 600;
   const screenHeight = 600;
   return {
+    tweens: {
+      add: jest.fn(),
+    },
     scale: { width: screenWidth, height: screenHeight },
     add: {
       existing: jest.fn(),
-      sprite: jest.fn(() => createMockSprite()),
+      sprite: jest.fn((x, y) => createMockSprite(x, y)),
       graphics: jest.fn(() => createMockGraphics()),
-    },
-    physics: {
-      add: {
-        sprite: jest.fn(() => createMockSprite()),
-      },
     },
   };
 };
@@ -107,7 +100,7 @@ export const createMockGameConfig = (): GameConfig => {
     boardHeight: 600,
     tileSize: 600 / 6,
     selectedTile: null,
-    matches: null,
+    removalGrid: null,
     swapSpeed: 200,
     shfitSpeed: 100,
     destroySpeed: 200,

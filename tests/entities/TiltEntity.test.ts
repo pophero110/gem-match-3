@@ -24,11 +24,10 @@ describe("TileEntity", () => {
         .spyOn(Math, "random")
         .mockReturnValue(expectedRandomIndex);
       const tileEntity = new TileEntity(mockScene, 0, 0, 100);
-      const mockSprite = tileEntity.sprite;
 
       tileEntity.render();
 
-      expect(mockScene.add.sprite).toHaveBeenCalledWith(50, 50, "player", 0);
+      expect(mockScene.add.sprite).toHaveBeenCalledWith(0, 0, "player", 0);
       expect(tileEntity.type).toBe(expectedValues[expectedRandomIndex]);
 
       spyMathRandom.mockRestore(); // Restore Math.random() to its original implementation

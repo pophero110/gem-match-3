@@ -1,4 +1,8 @@
 import TileEntity from "../entities/TileEntity";
+import { GameConfig } from "../scenes/GameScene";
+import { destoryMatches } from "./DestoryMatches";
+import { hasMatchesInBoard } from "./HasMatch";
+import { markMatches } from "./MarkMatches";
 
 export default function swapTile(
   sourceTileIndices: { row: number; col: number },

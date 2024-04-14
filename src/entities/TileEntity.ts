@@ -29,10 +29,9 @@ export default class TileEntity {
   }
 
   render() {
-    const spriteX = this.x + this.size / 2;
-    const spriteY = this.y + this.size / 2;
-    this.sprite = this.scene.add.sprite(spriteX, spriteY, "player", 0);
-    this.sprite.setFrame(this.frame);
+    const spriteX = this.x;
+    const spriteY = this.y;
+    this.sprite = this.scene.add.sprite(spriteX, spriteY, "player", this.frame);
     this.sprite.setSize(this.size, this.size); // Set size
     // this.sprite.setDisplaySize(width / 2, height / 2); // Set display size
   }
