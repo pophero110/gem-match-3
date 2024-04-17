@@ -1,27 +1,23 @@
 import { logTileEntityGridBy } from "../common/LogUtils";
 import TileEntity from "../entities/TileEntity";
-import { GameConfig } from "../scenes/GameScene";
+import GameScene, { GameConfig } from "../scenes/GameScene";
 
-export function shiftTilesUp(gameConfig: GameConfig) {
-  for (let row = 1; row < gameConfig.boardRows; row++) {
-    for (let col = 0; col < gameConfig.boardCols; col++) {
-      shiftTileUpIfPossible(row, col, gameConfig);
+export function shiftTilesUp(gameScene: GameScene) {
+  for (let row = 1; row < gameScene.boardRows; row++) {
+    for (let col = 0; col < gameScene.boardCols; col++) {
+      shiftTileUpIfPossible(row, col, gameScene);
     }
   }
-  logTileEntityGridBy(
-    "isEmpty",
-    gameConfig.tileEntityGrid,
-    "After Shifting Up"
-  );
+  logTileEntityGridBy("isEmpty", gameScene.tileEntityGrid, "After Shifting Up");
 }
 
-export function shiftTileUpIfPossible(row, col, gameConfig: GameConfig) {
-  const tileEntityGrid = gameConfig.tileEntityGrid;
+export function shiftTileUpIfPossible(row, col, gameScene: GameScene) {
+  const tileEntityGrid = gameScene.tileEntityGrid;
   const currentTile = tileEntityGrid[row][col];
   if (!currentTile.isEmpty) {
     let emptyTilesCount = countEmptyTilesAbove(row, col, tileEntityGrid);
     if (emptyTilesCount > 0) {
-      animateTileShiftUp(row, col, gameConfig, emptyTilesCount);
+      animateTileShiftUp(row, col, gameScene, emptyTilesCount);
       [tileEntityGrid[row - emptyTilesCount][col], tileEntityGrid[row][col]] = [
         tileEntityGrid[row][col],
         tileEntityGrid[row - emptyTilesCount][col],
@@ -30,13 +26,13 @@ export function shiftTileUpIfPossible(row, col, gameConfig: GameConfig) {
   }
 }
 
-function animateTileShiftUp(row, col, gameConfig: GameConfig, emptyTilesAbove) {
-  gameConfig.scene.tweens.add({
-    targets: gameConfig.tileEntityGrid[row][col].sprite,
+function animateTileShiftUp(row, col, gameScene: GameScene, emptyTilesAbove) {
+  gameScene.tweens.add({
+    targets: gameScene.tileEntityGrid[row][col].sprite,
     y:
-      gameConfig.tileEntityGrid[row][col].sprite.y -
-      emptyTilesAbove * gameConfig.tileSize,
-    duration: gameConfig.shfitSpeed * emptyTilesAbove,
+      gameScene.tileEntityGrid[row][col].sprite.y -
+      emptyTilesAbove * gameScene.tileSize,
+    duration: gameScene.shfitSpeed * emptyTilesAbove,
   } as any);
 }
 

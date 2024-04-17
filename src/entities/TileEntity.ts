@@ -1,4 +1,5 @@
 import { v4 as uuidV4 } from "uuid";
+import GameScene from "../scenes/GameScene";
 
 export enum TileType {
   RED,
@@ -9,7 +10,7 @@ export enum TileType {
 
 export default class TileEntity {
   id = uuidV4();
-  scene: Phaser.Scene;
+  scene: GameScene;
   x: number;
   y: number;
   size: number;
@@ -17,7 +18,7 @@ export default class TileEntity {
   frame: number;
   type: TileType;
   isEmpty: boolean;
-  constructor(scene: Phaser.Scene, x: number, y: number, size: number) {
+  constructor(scene: GameScene, x: number, y: number, size: number) {
     this.x = x;
     this.y = y;
     this.scene = scene;

@@ -4,7 +4,7 @@ import {
   markVerticalMatches,
 } from "../../src/helpers/MarkMatches";
 import {
-  createMockGameConfig,
+  createMockGameScene,
   createMockTileEntityGridFromPattern,
 } from "../common/MockData";
 
@@ -33,11 +33,11 @@ describe("mark matches", () => {
       [3, 2, 1, 2, 0, 0],
     ];
     const tileEntityGrid = createMockTileEntityGridFromPattern(tileTypePattern);
-    const gameConfig = createMockGameConfig();
-    gameConfig.tileEntityGrid = tileEntityGrid;
-    gameConfig.removalGrid = removalGrid;
+    const gameScene = createMockGameScene();
+    gameScene.tileEntityGrid = tileEntityGrid;
+    gameScene.removalGrid = removalGrid;
 
-    markMatches(gameConfig);
+    markMatches(gameScene);
 
     const expectedRemovalGrid = [
       [1, 1, 1, 0, 0, 0],

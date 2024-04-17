@@ -1,39 +1,39 @@
 import TileEntity from "../entities/TileEntity";
-import { GameConfig } from "../scenes/GameScene";
 import { destoryMatches } from "./DestoryMatches";
 import { findTileIndicesByPosition } from "./FindTile";
 import { hasMatchesInBoard } from "./HasMatch";
 import { markMatches } from "./MarkMatches";
 import swapTile from "./SwapTile";
+import GameScene from "../scenes/GameScene";
 
 export function onSwapTile(pointer: Phaser.Input.Pointer) {
-  if (this.gameConfig.selectedTile == null) return;
+  if (this.canSwapTile && this.selectedTile != null) {
+    const sourceTileIndices = findTileIndicesByPosition(
+      this.selectedTile.sprite.x,
+      this.selectedTile.sprite.y,
+      this.tileSize,
+      this.boardRows,
+      this.boardCols
+    );
 
-  const sourceTileIndices = findTileIndicesByPosition(
-    this.gameConfig.selectedTile.sprite.x,
-    this.gameConfig.selectedTile.sprite.y,
-    this.gameConfig.tileSize,
-    this.gameConfig.boardRows,
-    this.gameConfig.boardCols
-  );
+    const deltaX = pointer.x - this.selectedTile.sprite.x;
+    const deltaY = pointer.y - this.selectedTile.sprite.y;
+    const distanceThreshold = 50;
 
-  const deltaX = pointer.x - this.gameConfig.selectedTile.sprite.x;
-  const deltaY = pointer.y - this.gameConfig.selectedTile.sprite.y;
-  const distanceThreshold = 50;
-
-  if (
-    Math.abs(deltaX) > distanceThreshold ||
-    Math.abs(deltaY) > distanceThreshold
-  ) {
-    const direction = determineDirection(deltaX, deltaY);
-    if (direction) {
-      const { sourceTile, destinationTile } = swapTile(
-        sourceTileIndices,
-        direction,
-        this.gameConfig.tileEntityGrid
-      );
-      if (sourceTile && destinationTile) {
-        animateSwappedTile(sourceTile, destinationTile, this.gameConfig);
+    if (
+      Math.abs(deltaX) > distanceThreshold ||
+      Math.abs(deltaY) > distanceThreshold
+    ) {
+      const direction = determineDirection(deltaX, deltaY);
+      if (direction) {
+        const { sourceTile, destinationTile } = swapTile(
+          sourceTileIndices,
+          direction,
+          this.tileEntityGrid
+        );
+        if (sourceTile && destinationTile) {
+          animateSwappedTile(sourceTile, destinationTile, this);
+        }
       }
     }
   }
@@ -53,27 +53,27 @@ export function determineDirection(
 export function animateSwappedTile(
   sourceTile: TileEntity,
   destinationTile: TileEntity,
-  gameConfig: GameConfig
+  gameScene: GameScene
 ) {
   const sourceSpriteX = sourceTile.sprite.x;
   const sourceSpriteY = sourceTile.sprite.y;
 
-  gameConfig.scene.tweens.add({
+  gameScene.tweens.add({
     targets: sourceTile.sprite,
     x: destinationTile.sprite.x,
     y: destinationTile.sprite.y,
-    duration: gameConfig.swapSpeed,
+    duration: gameScene.swapSpeed,
   } as any);
 
-  gameConfig.scene.tweens.add({
+  gameScene.tweens.add({
     targets: destinationTile.sprite,
     x: sourceSpriteX,
     y: sourceSpriteY,
-    duration: gameConfig.swapSpeed,
+    duration: gameScene.swapSpeed,
     onComplete: () => {
-      if (hasMatchesInBoard(gameConfig.tileEntityGrid)) {
-        markMatches(gameConfig);
-        destoryMatches(gameConfig);
+      if (hasMatchesInBoard(gameScene.tileEntityGrid)) {
+        markMatches(gameScene);
+        destoryMatches(gameScene);
       }
     },
   } as any);

@@ -1,28 +1,28 @@
 import { calculateTileCenter } from "../../src/helpers/PositionUtils";
 import { replaceEmptyTilesInColumns } from "../../src/helpers/ReplaceEmtpyTiles";
-import { createMockGameConfig } from "../common/MockData";
+import { createMockGameScene } from "../common/MockData";
 
 describe("Replace Empty tiles", () => {
   it("should replace empty tiles from bottom with tiles at last row are empty", () => {
-    const gameConfig = createMockGameConfig();
-    gameConfig.tileEntityGrid[gameConfig.boardRows - 1].forEach(
+    const gameScene = createMockGameScene();
+    gameScene.tileEntityGrid[gameScene.boardRows - 1].forEach(
       (tile) => (tile.isEmpty = true)
     );
 
-    replaceEmptyTilesInColumns(gameConfig);
+    replaceEmptyTilesInColumns(gameScene);
 
-    gameConfig.tileEntityGrid[gameConfig.boardRows - 1].forEach((tile) =>
+    gameScene.tileEntityGrid[gameScene.boardRows - 1].forEach((tile) =>
       expect(tile.isEmpty).toBeFalsy()
     );
 
-    gameConfig.tileEntityGrid[gameConfig.boardRows - 1].forEach((tile, col) => {
+    gameScene.tileEntityGrid[gameScene.boardRows - 1].forEach((tile, col) => {
       const { x, y } = calculateTileCenter(
-        gameConfig.boardRows - 1,
+        gameScene.boardRows - 1,
         col,
-        gameConfig.tileSize
+        gameScene.tileSize
       );
       expect(tile.x).toEqual(x);
-      expect(gameConfig.scene.tweens.add).toHaveBeenNthCalledWith(col + 1, {
+      expect(gameScene.tweens.add).toHaveBeenNthCalledWith(col + 1, {
         targets: tile.sprite,
         duration: 100,
         y,
@@ -30,23 +30,23 @@ describe("Replace Empty tiles", () => {
       });
     });
 
-    expect(gameConfig.scene.tweens.add).toHaveBeenCalledTimes(6);
+    expect(gameScene.tweens.add).toHaveBeenCalledTimes(6);
   });
 
   it("should replace empty tiles from bottom with tiles at first column are emtpy", () => {
-    const gameConfig = createMockGameConfig();
-    gameConfig.tileEntityGrid.forEach((row) => {
+    const gameScene = createMockGameScene();
+    gameScene.tileEntityGrid.forEach((row) => {
       row[0].isEmpty = true;
     });
 
-    replaceEmptyTilesInColumns(gameConfig);
+    replaceEmptyTilesInColumns(gameScene);
 
-    gameConfig.tileEntityGrid.forEach((row, index) => {
+    gameScene.tileEntityGrid.forEach((row, index) => {
       const tile = row[0];
       expect(row[0].isEmpty).toBeFalsy();
-      const { x, y } = calculateTileCenter(index, 0, gameConfig.tileSize);
+      const { x, y } = calculateTileCenter(index, 0, gameScene.tileSize);
       expect(tile.x).toEqual(x);
-      expect(gameConfig.scene.tweens.add).toHaveBeenNthCalledWith(index + 1, {
+      expect(gameScene.tweens.add).toHaveBeenNthCalledWith(index + 1, {
         targets: tile.sprite,
         duration: 100 * (index + 1),
         y,
@@ -54,28 +54,28 @@ describe("Replace Empty tiles", () => {
       });
     });
 
-    expect(gameConfig.scene.tweens.add).toHaveBeenCalledTimes(6);
+    expect(gameScene.tweens.add).toHaveBeenCalledTimes(6);
   });
 
   it("should replace empty tiles from bottom with tiles at last column are emtpy", () => {
-    const gameConfig = createMockGameConfig();
+    const gameScene = createMockGameScene();
 
-    gameConfig.tileEntityGrid.forEach((row) => {
-      row[gameConfig.boardRows - 1].isEmpty = true;
+    gameScene.tileEntityGrid.forEach((row) => {
+      row[gameScene.boardRows - 1].isEmpty = true;
     });
 
-    replaceEmptyTilesInColumns(gameConfig);
+    replaceEmptyTilesInColumns(gameScene);
 
-    gameConfig.tileEntityGrid.forEach((row) => {
+    gameScene.tileEntityGrid.forEach((row) => {
       expect(row[0].isEmpty).toBeFalsy();
     });
 
-    gameConfig.tileEntityGrid.forEach((row, index) => {
-      const tile = row[gameConfig.boardRows - 1];
-      expect(row[gameConfig.boardRows - 1].isEmpty).toBeFalsy();
-      const { x, y } = calculateTileCenter(index, 5, gameConfig.tileSize);
+    gameScene.tileEntityGrid.forEach((row, index) => {
+      const tile = row[gameScene.boardRows - 1];
+      expect(row[gameScene.boardRows - 1].isEmpty).toBeFalsy();
+      const { x, y } = calculateTileCenter(index, 5, gameScene.tileSize);
       expect(tile.x).toEqual(x);
-      expect(gameConfig.scene.tweens.add).toHaveBeenNthCalledWith(index + 1, {
+      expect(gameScene.tweens.add).toHaveBeenNthCalledWith(index + 1, {
         targets: tile.sprite,
         duration: 100 * (index + 1),
         y,
@@ -83,34 +83,34 @@ describe("Replace Empty tiles", () => {
       });
     });
 
-    expect(gameConfig.scene.tweens.add).toHaveBeenCalledTimes(6);
+    expect(gameScene.tweens.add).toHaveBeenCalledTimes(6);
   });
 
   it("should replace empty tiles from bottom with tiles at every column are emtpy", () => {
-    const gameConfig = createMockGameConfig();
-    gameConfig.tileEntityGrid.forEach((row) => {
+    const gameScene = createMockGameScene();
+    gameScene.tileEntityGrid.forEach((row) => {
       row.forEach((tile) => (tile.isEmpty = true));
     });
 
-    replaceEmptyTilesInColumns(gameConfig);
+    replaceEmptyTilesInColumns(gameScene);
 
-    gameConfig.tileEntityGrid.forEach((row) => {
+    gameScene.tileEntityGrid.forEach((row) => {
       row.forEach((tile) => expect(tile.isEmpty).toBeFalsy());
     });
 
-    expect(gameConfig.scene.tweens.add).toHaveBeenCalledTimes(36);
+    expect(gameScene.tweens.add).toHaveBeenCalledTimes(36);
   });
 
   it("should not replace empty tiles that not from bottom", () => {
-    const gameConfig = createMockGameConfig();
-    gameConfig.tileEntityGrid[1].forEach((tile) => (tile.isEmpty = true));
+    const gameScene = createMockGameScene();
+    gameScene.tileEntityGrid[1].forEach((tile) => (tile.isEmpty = true));
 
-    replaceEmptyTilesInColumns(gameConfig);
+    replaceEmptyTilesInColumns(gameScene);
 
-    gameConfig.tileEntityGrid[1].forEach((tile) =>
+    gameScene.tileEntityGrid[1].forEach((tile) =>
       expect(tile.isEmpty).toBeTruthy()
     );
 
-    expect(gameConfig.scene.tweens.add).toHaveBeenCalledTimes(0);
+    expect(gameScene.tweens.add).toHaveBeenCalledTimes(0);
   });
 });

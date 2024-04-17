@@ -1,15 +1,15 @@
 import { log } from "../common/LogUtils";
 import TileEntity from "../entities/TileEntity";
-import { GameConfig } from "../scenes/GameScene";
+import GameScene from "../scenes/GameScene";
 
 const MIN_STREAK_COUNT = 3;
 
-export function markMatches(gameConfig: GameConfig) {
-  markHorizontalMatches(gameConfig.tileEntityGrid, gameConfig.removalGrid);
-  markVerticalMatches(gameConfig.tileEntityGrid, gameConfig.removalGrid);
+export function markMatches(gameScene: GameScene) {
+  markHorizontalMatches(gameScene.tileEntityGrid, gameScene.removalGrid);
+  markVerticalMatches(gameScene.tileEntityGrid, gameScene.removalGrid);
 
   log("After Mark Matches");
-  console.table(gameConfig.removalGrid);
+  console.table(gameScene.removalGrid);
 }
 
 export function markHorizontalMatches(

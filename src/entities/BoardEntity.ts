@@ -1,5 +1,7 @@
+import GameScene from "../scenes/GameScene";
+
 export default class BoardEntity {
-  scene: Phaser.Scene;
+  scene: GameScene;
   x: number;
   y: number;
   width: number;
@@ -9,7 +11,7 @@ export default class BoardEntity {
   tileSize: number;
 
   constructor(
-    scene: Phaser.Scene,
+    scene: GameScene,
     x: number,
     y: number,
     width: number,

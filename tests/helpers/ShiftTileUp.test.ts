@@ -4,7 +4,7 @@ import {
   shiftTilesUp,
 } from "../../src/helpers/ShiftTileUp";
 import {
-  createMockGameConfig,
+  createMockGameScene,
   createMockTileEntityGrid,
 } from "../common/MockData";
 
@@ -30,14 +30,14 @@ describe("Shift Tiles", () => {
 
   describe("Shift a tile if possible", () => {
     it("should shfit tile up to the farthest empty tile in current column", () => {
-      const gameConfig = createMockGameConfig();
-      const grid = gameConfig.tileEntityGrid;
+      const gameScene = createMockGameScene();
+      const grid = gameScene.tileEntityGrid;
       const expectTile = grid[2][0];
       const farthestEmtpyTile = grid[0][0];
       grid[0][0].isEmpty = true;
       grid[1][0].isEmpty = true;
 
-      shiftTileUpIfPossible(2, 0, gameConfig);
+      shiftTileUpIfPossible(2, 0, gameScene);
       expect(grid[0][0]).toEqual(expectTile);
       expect(grid[0][0].isEmpty).toBeFalsy();
       expect(grid[2][0]).toEqual(farthestEmtpyTile);
@@ -45,12 +45,12 @@ describe("Shift Tiles", () => {
     });
 
     it("should not shift empty tile", () => {
-      const gameConfig = createMockGameConfig();
-      const grid = gameConfig.tileEntityGrid;
+      const gameScene = createMockGameScene();
+      const grid = gameScene.tileEntityGrid;
       const expectTile = grid[2][0];
       grid[2][0].isEmpty = true;
 
-      shiftTileUpIfPossible(2, 0, gameConfig);
+      shiftTileUpIfPossible(2, 0, gameScene);
       expect(grid[2][0]).toEqual(expectTile);
       expect(grid[2][0].isEmpty).toBeTruthy();
     });
@@ -63,7 +63,7 @@ describe("Shift Tiles", () => {
    */
   describe("Shift tiles", () => {
     it("should shift tiles with one empty tile in a column", () => {
-      const gameConfig = createMockGameConfig();
+      const gameConfig = createMockGameScene();
       const grid = gameConfig.tileEntityGrid;
       grid[0][0].isEmpty = true;
       const expectTileA = grid[1][0];

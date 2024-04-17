@@ -1,6 +1,6 @@
-import { log, logSprites, logTileEntityGridBy } from "../common/LogUtils";
+import { logTileEntityGridBy } from "../common/LogUtils";
 import TileEntity from "../entities/TileEntity";
-import { GameConfig } from "../scenes/GameScene";
+import GameScene from "../scenes/GameScene";
 import { destoryMatches } from "./DestoryMatches";
 import { hasMatchesInBoard } from "./HasMatch";
 import { markMatches } from "./MarkMatches";
@@ -10,62 +10,62 @@ import { calculateTileCenter } from "./PositionUtils";
  * Replace the empty tiles in each column of the game board grid from bottom to top
  * Empty spaces in each column are filled from bottom to top with new tiles.
  *
- * @param gameConfig The game configuration object containing the board grid and tile size.
+ * @param gameScene The game configuration object containing the board grid and tile size.
  */
-export function replaceEmptyTilesInColumns(gameConfig: GameConfig) {
+export function replaceEmptyTilesInColumns(gameScene: GameScene) {
   let replacedCount = 0;
   // Loop through the last row
-  gameConfig.tileEntityGrid[gameConfig.boardRows - 1].forEach((_, col) => {
-    let emptyTileCount = countEmptyTileInCol(col, gameConfig.tileEntityGrid);
+  gameScene.tileEntityGrid[gameScene.boardRows - 1].forEach((_, col) => {
+    let emptyTileCount = countEmptyTileInCol(col, gameScene.tileEntityGrid);
     if (emptyTileCount > 0) {
       for (let i = 0; i < emptyTileCount; i++) {
         replacedCount++;
 
         // Get tile starting position
         const { x: startX, y: startY } = calculateTileCenter(
-          gameConfig.boardRows,
+          gameScene.boardRows,
           col,
-          gameConfig.tileSize
+          gameScene.tileSize
         );
 
-        const row = gameConfig.boardRows - emptyTileCount + i;
+        const row = gameScene.boardRows - emptyTileCount + i;
 
         const newTileEntity = new TileEntity(
-          gameConfig.scene,
+          gameScene,
           startX,
-          startY + i * gameConfig.tileSize,
-          gameConfig.tileSize
+          startY + i * gameScene.tileSize,
+          gameScene.tileSize
         );
 
-        gameConfig.tileEntityGrid[row][col] = newTileEntity;
+        gameScene.tileEntityGrid[row][col] = newTileEntity;
 
-        const endY = startY - (emptyTileCount - i) * gameConfig.tileSize;
-        const duration = gameConfig.shfitSpeed * (i + 1);
-        animateTileShiftUp(newTileEntity, gameConfig, endY, duration);
+        const endY = startY - (emptyTileCount - i) * gameScene.tileSize;
+        const duration = gameScene.shfitSpeed * (i + 1);
+        animateTileShiftUp(newTileEntity, gameScene, endY, duration);
       }
     }
   });
 
   logTileEntityGridBy(
     "isEmpty",
-    gameConfig.tileEntityGrid,
+    gameScene.tileEntityGrid,
     "After Replace Empty Tiles: isEmpty"
   );
 
-  function animateTileShiftUp(tileEntity, gameConfig, y, duration) {
-    gameConfig.scene.tweens.add({
+  function animateTileShiftUp(tileEntity, gameScene: GameScene, y, duration) {
+    gameScene.tweens.add({
       targets: tileEntity.sprite,
       y,
       duration,
       onComplete: () => {
         replacedCount--;
         if (replacedCount == 0) {
-          if (hasMatchesInBoard(gameConfig.tileEntityGrid)) {
-            gameConfig.scene.time.addEvent({
+          if (hasMatchesInBoard(gameScene.tileEntityGrid)) {
+            gameScene.time.addEvent({
               delay: 250,
               callback: () => {
-                markMatches(gameConfig);
-                destoryMatches(gameConfig);
+                markMatches(gameScene);
+                destoryMatches(gameScene);
               },
             });
           }

@@ -1,6 +1,5 @@
 import TileEntity, { TileType } from "../../src/entities/TileEntity";
-import { faker } from "@faker-js/faker";
-import { GameConfig } from "../../src/scenes/GameScene";
+import GameScene from "../../src/scenes/GameScene";
 import { calculateTileCenter } from "../../src/helpers/PositionUtils";
 
 const TileTypeArray = Object.values(TileType) as TileType[];
@@ -89,9 +88,8 @@ export const createMockGraphics = () => {
   };
 };
 
-export const createMockGameConfig = (): GameConfig => {
+export const createMockGameScene = (): GameScene => {
   return {
-    scene: createMockScene(),
     boardEntity: null,
     tileEntityGrid: createMockTileEntityGrid(),
     boardRows: 6,
@@ -104,5 +102,8 @@ export const createMockGameConfig = (): GameConfig => {
     swapSpeed: 200,
     shfitSpeed: 100,
     destroySpeed: 200,
+    canSelectTile: true,
+    canSwapTile: false,
+    ...createMockScene(),
   };
 };
