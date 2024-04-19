@@ -1,27 +1,28 @@
 import BoardEntity from "../entities/BoardEntity";
 import TileEntity from "../entities/TileEntity";
-import { destoryMatches } from "../helpers/DestoryMatches";
-import { markMatches } from "../helpers/MarkMatches";
 import { calculateTileCenter } from "../helpers/PositionUtils";
 import { onSelectTile } from "../helpers/OnSelectTile";
 import { onSwapTile } from "../helpers/OnSwapTile";
-import { hasMatchesInBoard } from "../helpers/HasMatch";
+import * as Phaser from "phaser";
+import handleMatches from "../helpers/HandleMatches";
+
 export interface GameConfig {
-  boardEntity: BoardEntity | null;
-  tileEntityGrid: TileEntity[][] | null;
+  boardEntity: BoardEntity;
+  tileEntityGrid: TileEntity[][];
   boardRows: number;
   boardCols: number;
   boardWidth: number;
   boardHeight: number;
   tileSize: number;
-  selectedTile: TileEntity | null;
-  removalGrid: number[][] | null;
+  selectedTile: TileEntity;
+  removalGrid: number[][];
   swapSpeed: number;
   shfitSpeed: number;
   destroySpeed: number;
   canSelectTile: boolean;
   canSwapTile: boolean;
 }
+
 export default class GameScene extends Phaser.Scene implements GameConfig {
   boardEntity = null;
   tileEntityGrid = null;
@@ -48,12 +49,7 @@ export default class GameScene extends Phaser.Scene implements GameConfig {
       Array(this.boardCols).fill(0)
     );
 
-    if (hasMatchesInBoard(this.tileEntityGrid)) {
-      markMatches(this);
-      destoryMatches(this);
-    } else {
-      this.canSelectTile = true;
-    }
+    handleMatches(this);
 
     this.input.on("pointerdown", onSelectTile, this);
     this.input.on("pointerup", onSwapTile, this);

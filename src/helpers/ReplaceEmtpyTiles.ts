@@ -1,9 +1,7 @@
 import { logTileEntityGridBy } from "../common/LogUtils";
 import TileEntity from "../entities/TileEntity";
 import GameScene from "../scenes/GameScene";
-import { destoryMatches } from "./DestoryMatches";
-import { hasMatchesInBoard } from "./HasMatch";
-import { markMatches } from "./MarkMatches";
+import handleMatches from "./HandleMatches";
 import { calculateTileCenter } from "./PositionUtils";
 
 /**
@@ -34,7 +32,7 @@ export function replaceEmptyTilesInColumns(gameScene: GameScene) {
           gameScene,
           startX,
           startY + i * gameScene.tileSize,
-          gameScene.tileSize
+          100
         );
 
         gameScene.tileEntityGrid[row][col] = newTileEntity;
@@ -60,15 +58,10 @@ export function replaceEmptyTilesInColumns(gameScene: GameScene) {
       onComplete: () => {
         replacedCount--;
         if (replacedCount == 0) {
-          if (hasMatchesInBoard(gameScene.tileEntityGrid)) {
-            gameScene.time.addEvent({
-              delay: 250,
-              callback: () => {
-                markMatches(gameScene);
-                destoryMatches(gameScene);
-              },
-            });
-          }
+          gameScene.time.addEvent({
+            delay: 250,
+            callback: () => handleMatches(gameScene),
+          });
         }
       },
     } as any);

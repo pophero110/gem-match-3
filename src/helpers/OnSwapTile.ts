@@ -1,13 +1,12 @@
 import TileEntity from "../entities/TileEntity";
-import { destoryMatches } from "./DestoryMatches";
 import { findTileIndicesByPosition } from "./FindTile";
-import { hasMatchesInBoard } from "./HasMatch";
-import { markMatches } from "./MarkMatches";
 import swapTile from "./SwapTile";
 import GameScene from "../scenes/GameScene";
+import handleMatches from "./HandleMatches";
 
-export function onSwapTile(pointer: Phaser.Input.Pointer) {
+export function onSwapTile(this: GameScene, pointer: Phaser.Input.Pointer) {
   if (this.canSwapTile && this.selectedTile != null) {
+    this.canSelectTile = false;
     const sourceTileIndices = findTileIndicesByPosition(
       this.selectedTile.sprite.x,
       this.selectedTile.sprite.y,
@@ -33,6 +32,8 @@ export function onSwapTile(pointer: Phaser.Input.Pointer) {
         );
         if (sourceTile && destinationTile) {
           animateSwappedTile(sourceTile, destinationTile, this);
+          this.canSwapTile = false;
+          this.selectedTile = null;
         }
       }
     }
@@ -70,11 +71,6 @@ export function animateSwappedTile(
     x: sourceSpriteX,
     y: sourceSpriteY,
     duration: gameScene.swapSpeed,
-    onComplete: () => {
-      if (hasMatchesInBoard(gameScene.tileEntityGrid)) {
-        markMatches(gameScene);
-        destoryMatches(gameScene);
-      }
-    },
+    onComplete: () => handleMatches(gameScene),
   } as any);
 }

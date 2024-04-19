@@ -1,6 +1,7 @@
+import GameScene from "../scenes/GameScene";
 import { findTileIndicesByPosition } from "./FindTile";
 
-export function onSelectTile(pointer: Phaser.Input.Pointer) {
+export function onSelectTile(this: GameScene, pointer: Phaser.Input.Pointer) {
   if (this.canSelectTile) {
     this.canSwapTile = true;
     const startX = pointer.x;
