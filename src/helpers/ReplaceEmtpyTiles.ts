@@ -23,7 +23,9 @@ export function replaceEmptyTilesInColumns(gameScene: GameScene) {
         const { x: startX, y: startY } = calculateTileCenter(
           gameScene.boardRows,
           col,
-          gameScene.tileSize
+          gameScene.tileSize,
+          gameScene.boardEntity.x,
+          gameScene.boardEntity.y
         );
 
         const row = gameScene.boardRows - emptyTileCount + i;

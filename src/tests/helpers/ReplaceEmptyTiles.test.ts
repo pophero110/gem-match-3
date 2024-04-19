@@ -22,7 +22,9 @@ describe("Replace Empty tiles", () => {
       const { x, y } = calculateTileCenter(
         gameScene.boardRows - 1,
         col,
-        gameScene.tileSize
+        gameScene.tileSize,
+        0,
+        0
       );
       expect(tile.x).toEqual(x);
       expect(gameScene.tweens.add).toHaveBeenNthCalledWith(col + 1, {
@@ -47,7 +49,7 @@ describe("Replace Empty tiles", () => {
     gameScene.tileEntityGrid.forEach((row, index) => {
       const tile = row[0];
       expect(row[0].isEmpty).toBeFalsy();
-      const { x, y } = calculateTileCenter(index, 0, 100);
+      const { x, y } = calculateTileCenter(index, 0, 100, 0, 0);
       expect(tile.x).toEqual(x);
       expect(gameScene.tweens.add).toHaveBeenNthCalledWith(index + 1, {
         targets: tile.sprite,
@@ -76,7 +78,7 @@ describe("Replace Empty tiles", () => {
     gameScene.tileEntityGrid.forEach((row, index) => {
       const tile = row[gameScene.boardRows - 1];
       expect(row[gameScene.boardRows - 1].isEmpty).toBeFalsy();
-      const { x, y } = calculateTileCenter(index, 5, 100);
+      const { x, y } = calculateTileCenter(index, 5, 100, 0, 0);
       expect(tile.x).toEqual(x);
       expect(gameScene.tweens.add).toHaveBeenNthCalledWith(index + 1, {
         targets: tile.sprite,

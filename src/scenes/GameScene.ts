@@ -1,6 +1,9 @@
 import BoardEntity from "../entities/BoardEntity";
 import TileEntity from "../entities/TileEntity";
-import { calculateTileCenter } from "../helpers/PositionUtils";
+import {
+  calculateBoardCenter,
+  calculateTileCenter,
+} from "../helpers/PositionUtils";
 import { onSelectTile } from "../helpers/OnSelectTile";
 import { onSwapTile } from "../helpers/OnSwapTile";
 import * as Phaser from "phaser";
@@ -24,15 +27,15 @@ export interface GameConfig {
 }
 
 export default class GameScene extends Phaser.Scene implements GameConfig {
-  boardEntity = null;
-  tileEntityGrid = null;
+  boardEntity: BoardEntity;
+  tileEntityGrid: TileEntity[][];
   boardRows = 6;
   boardCols = 6;
   boardWidth = 600;
   boardHeight = 600;
   tileSize = 600 / 6;
-  selectedTile = null;
-  removalGrid = null;
+  selectedTile: TileEntity;
+  removalGrid: number[][];
   swapSpeed = 200;
   shfitSpeed = 100;
   destroySpeed = 200;
@@ -62,7 +65,13 @@ export default class GameScene extends Phaser.Scene implements GameConfig {
     for (let row = 0; row < this.boardRows; row++) {
       tileEntityGrid[row] = [];
       for (let col = 0; col < this.boardCols; col++) {
-        const { x, y } = calculateTileCenter(row, col, this.tileSize);
+        const { x, y } = calculateTileCenter(
+          row,
+          col,
+          this.tileSize,
+          this.boardEntity.x,
+          this.boardEntity.y
+        );
         tileEntityGrid[row][col] = new TileEntity(this, x, y, this.tileSize);
       }
     }
@@ -70,10 +79,16 @@ export default class GameScene extends Phaser.Scene implements GameConfig {
   }
 
   public createBoardEntity() {
+    const { x, y } = calculateBoardCenter(
+      this.scale.width,
+      this.scale.height,
+      this.boardWidth,
+      this.boardHeight
+    );
     return new BoardEntity(
       this,
-      0,
-      0,
+      x,
+      y,
       this.boardWidth,
       this.boardHeight,
       this.boardRows,

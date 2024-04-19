@@ -8,8 +8,7 @@ describe("Set Selected Tile", () => {
 
     expect(gameScene.selectedTile).toBeNull();
 
-    const bind = onSelectTile.bind(gameScene, pointer);
-    bind();
+    onSelectTile.call(gameScene, pointer);
 
     const expected = gameScene.tileEntityGrid[0][0];
 
@@ -24,8 +23,7 @@ describe("Set Selected Tile", () => {
 
     expect(gameScene.selectedTile).toBeNull();
 
-    const bind = onSelectTile.bind(gameScene, pointer);
-    bind();
+    onSelectTile.call(gameScene, pointer);
 
     const expected = gameScene.tileEntityGrid[1][1];
 
@@ -40,8 +38,7 @@ describe("Set Selected Tile", () => {
 
     expect(gameScene.selectedTile).toBeNull();
 
-    const bind = onSelectTile.bind(gameScene, pointer);
-    bind();
+    onSelectTile.call(gameScene, pointer);
 
     const expected = gameScene.tileEntityGrid[1][1];
 
@@ -56,8 +53,7 @@ describe("Set Selected Tile", () => {
 
     expect(gameScene.selectedTile).toBeNull();
 
-    const bind = onSelectTile.bind(gameScene, pointer);
-    bind();
+    onSelectTile.call(gameScene, pointer);
 
     expect(gameScene.selectedTile).toBeNull();
     expect(gameScene.canSwapTile).toBeTruthy();

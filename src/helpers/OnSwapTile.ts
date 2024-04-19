@@ -1,8 +1,8 @@
 import TileEntity from "../entities/TileEntity";
-import { findTileIndicesByPosition } from "./FindTile";
 import swapTile from "./SwapTile";
 import GameScene from "../scenes/GameScene";
 import handleMatches from "./HandleMatches";
+import { findTileIndicesByPosition } from "./OnSelectTile";
 
 export function onSwapTile(this: GameScene, pointer: Phaser.Input.Pointer) {
   if (this.canSwapTile && this.selectedTile != null) {
@@ -12,7 +12,9 @@ export function onSwapTile(this: GameScene, pointer: Phaser.Input.Pointer) {
       this.selectedTile.sprite.y,
       this.tileSize,
       this.boardRows,
-      this.boardCols
+      this.boardCols,
+      this.boardEntity.x,
+      this.boardEntity.y
     );
 
     const deltaX = pointer.x - this.selectedTile.sprite.x;
@@ -24,7 +26,7 @@ export function onSwapTile(this: GameScene, pointer: Phaser.Input.Pointer) {
       Math.abs(deltaY) > distanceThreshold
     ) {
       const direction = determineDirection(deltaX, deltaY);
-      if (direction) {
+      if (direction && sourceTileIndices) {
         const { sourceTile, destinationTile } = swapTile(
           sourceTileIndices,
           direction,

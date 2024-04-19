@@ -1,5 +1,4 @@
 import { calculateTileCenter } from "../../helpers/PositionUtils";
-import { createMockGameScene } from "../common/MockData";
 
 describe("PositionUtils", () => {
   describe("calculateTileCenter", () => {
@@ -8,7 +7,7 @@ describe("PositionUtils", () => {
       const col = 0;
       const expected = { x: 50, y: 50 }; // Expected center coordinates
 
-      const result = calculateTileCenter(row, col, 100);
+      const result = calculateTileCenter(row, col, 100, 0, 0);
 
       expect(result).toEqual(expected);
     });
@@ -18,7 +17,7 @@ describe("PositionUtils", () => {
       const col = 1;
       const expected = { x: 150, y: 50 }; // Expected center coordinates
 
-      const result = calculateTileCenter(row, col, 100);
+      const result = calculateTileCenter(row, col, 100, 0, 0);
 
       expect(result).toEqual(expected);
     });

@@ -1,8 +1,11 @@
+import BoardEntity from "../../entities/BoardEntity";
 import TileEntity, { TileType } from "../../entities/TileEntity";
 import { calculateTileCenter } from "../../helpers/PositionUtils";
 import GameScene from "../../scenes/GameScene";
 
 const TileTypeArray = Object.values(TileType) as TileType[];
+const boardX = 0;
+const boardY = 0;
 
 /**
  * @param tileTypeGrid  Number represents the TileType
@@ -42,7 +45,7 @@ export function createMockTileEntityGrid(): TileEntity[][] {
 
 export function createMockTileEntityWithPosition(row, col) {
   const tileSize = 100;
-  const { x, y } = calculateTileCenter(row, col, tileSize);
+  const { x, y } = calculateTileCenter(row, col, tileSize, boardX, boardX);
   return new TileEntity(createMockScene(), x, y, tileSize);
 }
 
@@ -101,9 +104,22 @@ export const createMockGraphics = () => {
 const createRemovalGrid = () =>
   Array.from({ length: 6 }, () => Array(6).fill(0));
 
+export const createMockBoardEntity = () => {
+  return new BoardEntity(
+    createMockScene(),
+    boardX,
+    boardY,
+    600,
+    600,
+    6,
+    6,
+    100
+  );
+};
+
 export const createMockGameScene = (): GameScene => {
   return {
-    boardEntity: null,
+    boardEntity: createMockBoardEntity(),
     tileEntityGrid: createMockTileEntityGrid(),
     boardRows: 6,
     boardCols: 6,
